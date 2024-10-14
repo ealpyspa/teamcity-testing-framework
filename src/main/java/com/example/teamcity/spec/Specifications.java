@@ -9,37 +9,29 @@ import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 
 public class Specifications {
-
-    private static Specifications spec;
-
-    private Specifications() {}
-
-    public static Specifications getSpec() {
-        if (spec == null) {
-            spec = new Specifications();
-        }
-        return spec;
-    }
-
-    private RequestSpecBuilder reBuilder() {
+    private static RequestSpecBuilder reqBuilder() {
         var requestBuilder = new RequestSpecBuilder();
         requestBuilder.addFilter(new RequestLoggingFilter());
         requestBuilder.addFilter(new ResponseLoggingFilter());
+        requestBuilder.setContentType(ContentType.JSON);
+        requestBuilder.setAccept(ContentType.JSON);
         return requestBuilder;
     }
 
-    ;
-
-    public RequestSpecification unauthSpec() {
-        var requestBuilder = reBuilder();
-        requestBuilder.setContentType(ContentType.JSON);
-        requestBuilder.setAccept(ContentType.JSON);
+    public static RequestSpecification superUserAuth() {
+        var requestBuilder = reqBuilder();
+        requestBuilder.setBaseUri("http://%s:%s@%s/httpAuth".formatted("", Config.getProperty("superUserToken"), Config.getProperty("host")));
         return requestBuilder.build();
     }
 
-    public RequestSpecification authSpec(User user) {
-        var requestBuilder = reBuilder();
-        requestBuilder.setBaseUri("http://" + user.getUsername() + ":" + user.getPassword() + "@" + Config.getProperty("host"));
+    public static RequestSpecification unauthSpec() {
+        var requestBuilder = reqBuilder();
+        return requestBuilder.build();
+    }
+
+    public static RequestSpecification authSpec(User user) {
+        var requestBuilder = reqBuilder();
+        requestBuilder.setBaseUri("http://%s:%s@%s".formatted(user.getUsername(), user.getPassword(), Config.getProperty("host")));
         return requestBuilder.build();
     }
 }
