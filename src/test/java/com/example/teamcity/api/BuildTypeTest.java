@@ -2,6 +2,7 @@ package com.example.teamcity.api;
 
 import com.example.teamcity.models.BuildType;
 import com.example.teamcity.models.Project;
+import com.example.teamcity.models.User;
 import com.example.teamcity.requests.CheckedRequests;
 import com.example.teamcity.requests.unchecked.UncheckedBase;
 import com.example.teamcity.spec.Specifications;
