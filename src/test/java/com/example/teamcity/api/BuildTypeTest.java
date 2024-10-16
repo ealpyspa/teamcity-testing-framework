@@ -1,10 +1,12 @@
 package com.example.teamcity.api;
 
+import com.example.teamcity.api.generators.TestDataGenerator;
 import com.example.teamcity.api.models.BuildType;
 import com.example.teamcity.api.models.Project;
 import com.example.teamcity.api.models.Roles;
 import com.example.teamcity.api.models.User;
 import com.example.teamcity.api.requests.CheckedRequests;
+import com.example.teamcity.api.requests.UncheckedRequests;
 import com.example.teamcity.api.requests.unchecked.UncheckedBase;
 import com.example.teamcity.api.spec.Specifications;
 import org.apache.http.HttpStatus;
@@ -71,15 +73,32 @@ public class BuildTypeTest extends BaseApiTest {
 
     @Test(description = "Project admin should not be able to create buildType for not their project", groups = {"Negative", "Roles"})
     public void projectAdminCreatesBuildTypeForAnotherUserProjectTest() {
-        step("Create user1");
+        //steps are kept for better understanding
         step("Create project1");
-        step("Grant user PROJECT_ADMIN role in project1");
+        superUserCheckRequests.getRequest(PROJECTS).create(testData.getProject());
 
-        step("Create user2");
         step("Create project2");
-        step("Grant user PROJECT_ADMIN role in project2");
+        var project2 = TestDataGenerator.generate(Project.class); // Generate project2
+        superUserCheckRequests.getRequest(PROJECTS).create(project2); // Create project2
 
-        step("Create buildType for project1 by user2");
-        step("Check buildType was not created with forbidden code");
+        step("Create user1 with PROJECT_ADMIN role for the project1");
+        testData.getUser().setRoles(generate(Roles.class, "PROJECT_ADMIN", "p:" + testData.getProject().getId())); // Assign PROJECT_ADMIN role for user1
+        superUserCheckRequests.<User>getRequest(USERS).create(testData.getUser()); // Create user1
+
+        step("Create user2 with PROJECT_ADMIN role for the project2");
+        var user2 = TestDataGenerator.generate(User.class); // Generate user1
+        user2.setRoles(generate(Roles.class, "PROJECT_ADMIN", "p:" + project2.getId())); // Assign PROJECT_ADMIN role for user2
+        superUserCheckRequests.<User>getRequest(USERS).create(user2); // Create user2
+
+        step("Attempt to crete buildType for project2 by user1");
+        var user1CheckRequests = new UncheckedRequests(Specifications.authSpec(testData.getUser())); // User1 authentication
+
+        var buildTypeForProject2 = generate(BuildType.class, project2.getId()); // Generate buildType for project2
+
+        // Attempt to create buildType for project2 where user1 doesn't have PROJECT_ADMIN role
+        user1CheckRequests.getRequest(BUILD_TYPES)
+                .create(buildTypeForProject2)
+                .then().assertThat().statusCode(HttpStatus.SC_FORBIDDEN) // Expect response with http status code 403
+                .body(Matchers.containsString("Access is denied.")); // Expected error message
     }
 }
