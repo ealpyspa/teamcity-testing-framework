@@ -18,8 +18,7 @@ public abstract class CreateBasePage extends BasePage {
     protected SelenideElement connectionSuccessfulMessage = $(".connectionSuccessful");
 
     protected void baseCreateForm(String url) {
-        urlInput.shouldBe(Condition.visible, BASE_WAITING).val(url);
-        //urlInput.val(url); as in practice 6 (UI module)
+        urlInput.val(url);
         submitButton.click();
         connectionSuccessfulMessage.should(Condition.appear, BASE_WAITING );
     }

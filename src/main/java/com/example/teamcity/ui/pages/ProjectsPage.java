@@ -1,5 +1,6 @@
 package com.example.teamcity.ui.pages;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
@@ -26,6 +27,10 @@ public class ProjectsPage extends BasePage {
 
     public static ProjectsPage open() {
         return Selenide.open(PROJECTS_URL, ProjectsPage.class);
+    }
+
+    public ProjectsPage() {
+        header.shouldBe(Condition.visible, BASE_WAITING);
     }
 
     public List<ProjectElement> getProjects() {
