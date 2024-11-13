@@ -1,6 +1,7 @@
 package com.example.teamcity.ui;
 
 import com.codeborne.selenide.Condition;
+import com.example.teamcity.api.models.BuildTypes;
 import com.example.teamcity.api.models.Project;
 import com.example.teamcity.api.requests.CheckedRequests;
 import com.example.teamcity.api.spec.Specifications;
@@ -9,7 +10,7 @@ import com.example.teamcity.ui.pages.admin.CreateBuildConfigurationPage;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static com.example.teamcity.api.enums.Endpoint.PROJECTS;
+import static com.example.teamcity.api.enums.Endpoint.*;
 import static io.qameta.allure.Allure.step;
 
 
@@ -51,16 +52,21 @@ public class CreateBuildConfigurationTest extends BaseUiTest{
         softy.assertTrue(foundBuilds);
     }
 
+
     @Test(description = "User should not be able to create a build configuration for their project without REPO_URL", groups = {"Negative"})
     public void userCannotCreateBuildConfiguration() {
+
+        step("Count existing buildTypes of created project");
+        var initialBuildTypesCount = superUserCheckRequests.<BuildTypes>getRequest(PROJECT_BUILD_TYPES).read(createdProject.getId() + "/buildTypes").getCount();
+
         step("Attempt to create buildType for project by user in UI without REPO_URL");
         CreateBuildConfigurationPage.open(createdProject.getId())
                 .createForm("")  // Передаем пустой URL
                 .errorMessage.shouldHave(Condition.exactText("URL must not be empty"));
-        // Была идея сравнить количество созданных билдов до попытки создать новый и после,
-        // но getBuildTypes у Project (на основе спеки добавила поле buildTypes,
-        // создала класс BuildTypes c двумя полями - count и list of BuildType) было пустым,
-        // даже когда count не был пустым
+
+        step("Count build types of created project after attempt to create a new buildType");
+        var newBuildTypesCount = superUserCheckRequests.<BuildTypes>getRequest(PROJECT_BUILD_TYPES).read(createdProject.getId() + "/buildTypes").getCount();
+        softy.assertEquals(newBuildTypesCount, initialBuildTypesCount);
     }
 
 }
