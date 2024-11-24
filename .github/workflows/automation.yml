@@ -35,4 +35,4 @@ jobs:
       - name: Run tests
         continue-on-error: true
         # Указываем группу, чтобы не запустить тесты, связанные с сетапом TeamCity
-        run: ./mvnw test -Dtest='com.example.teamcity.${{input.package}}.**' -Dgroups=Regression
+        run: ./mvnw test -Dtest='com.example.teamcity.${{ input.package }}.**' -Dgroups=Regression
