@@ -4,7 +4,6 @@ import com.example.teamcity.api.models.ServerAuthSettings;
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
 import org.apache.http.HttpStatus;
-import org.w3c.dom.html.HTMLTableElement;
 
 public class ServerAuthRequest {
     private static final String SERVER_AUTH_SETTINGS_URL = "/app/rest/server/authSettings";
