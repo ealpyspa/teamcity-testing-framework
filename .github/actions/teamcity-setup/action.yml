@@ -66,10 +66,6 @@ runs:
       shell: bash
       run: cat src/main/resources/config.properties
 
-    - name: Set up superUserToken config property
-      shell: bash
-      run: echo "superUserToken=$SUPER_USER_TOKEN" >> src/main/resources/config.properties
-
     - name: Make mvnw executable
       shell: bash
       run: chmod +x ./mvnw
@@ -77,8 +73,12 @@ runs:
     - name: Setup Teamcity server
       shell: bash
       # Настройка сервера при первом запуске (принятие лицензии, выбор базы данных и тд), реализованная в виде теста
-      run: ./mvnw clean test -X -e -Dtest=SetUpServerTest#setUpTeamCityServerTest
+      run: ./mvnw clean test -X -Dtest=SetUpServerTest#setUpTeamCityServerTest
 
     - name: Setup superUserToken environment variable
       shell: bash
       run: echo "SUPER_USER_TOKEN=$(docker logs teamcity-server | grep 'Super user authentication token' | tail -n 1 | awk '{print $6}')" >> $GITHUB_ENV
+
+    - name: Set up superUserToken config property
+      shell: bash
+      run: echo "superUserToken=$SUPER_USER_TOKEN" >> src/main/resources/config.properties
