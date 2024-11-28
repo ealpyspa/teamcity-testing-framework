@@ -1,0 +1,21 @@
+name: Deploy to prod
+
+on: workflow_call
+
+# Это лишь примерные степы, как может выглдяеть пайплайн бекенда
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy backend to prod
+        run: echo Происходи деплой бекенда
+
+  deploy-stage:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy frontend to prod
+        run: echo Происходи деплой фронтенда
+
+
