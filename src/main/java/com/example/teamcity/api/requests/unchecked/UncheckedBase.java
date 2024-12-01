@@ -24,6 +24,15 @@ public class UncheckedBase extends Request implements CrudInterface {
     }
 
     @Override
+    public Response create(String locator, BaseModel model) {
+        return RestAssured
+                .given()
+                .spec(spec)
+                .body(model)
+                .post(endpoint.getUrl() + "/" + locator);
+    }
+
+    @Override
     public Response read(String locator) {
         return RestAssured
                 .given()
