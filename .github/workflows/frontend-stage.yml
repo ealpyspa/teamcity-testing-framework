@@ -1,0 +1,20 @@
+name: Deploy frontend
+
+on: workflow_call
+
+# Это примерные степы, как может выглядеть пайплайн фронтенда
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build frontend
+        run: echo собирается билд фронтенда \(прогоняются юнит тесты при сборке, запускаются линтеры\)и формируется и публикуется Docker образ с изменениями
+
+
+
+  deploy-stage:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy frontend to stage/review app
+        run: echo Просиходит деплой фронтенда

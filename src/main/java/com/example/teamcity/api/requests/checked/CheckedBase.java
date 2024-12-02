@@ -30,6 +30,11 @@ public final class CheckedBase<T extends BaseModel> extends Request implements C
     }
 
     @Override
+    public Object create(String id, BaseModel model) {
+        return create(model);
+    }
+
+    @Override
     public T read(String id) {
         return (T) uncheckedBase
                 .read(id)

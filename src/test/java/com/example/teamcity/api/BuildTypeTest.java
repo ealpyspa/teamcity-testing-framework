@@ -93,12 +93,12 @@ public class BuildTypeTest extends BaseApiTest {
         step("Attempt to crete buildType for project2 by user1");
         var user1CheckRequests = new UncheckedRequests(Specifications.authSpec(testData.getUser())); // User1 authentication
 
-        var buildTypeForProject2 = generate(BuildType.class, project2.getId()); // Generate buildType for project2
+        var buildTypeForProject2 = generate(BuildType.class); // Generate buildType for project2
 
         // Attempt to create buildType for project2 where user1 doesn't have PROJECT_ADMIN role
-        user1CheckRequests.getRequest(BUILD_TYPES)
-                .create(buildTypeForProject2)
+        user1CheckRequests.getRequest(PROJECT_BUILD_TYPES)
+                .create(project2.getId() + "/buildTypes", buildTypeForProject2)
                 .then().assertThat().statusCode(HttpStatus.SC_FORBIDDEN) // Expect response with http status code 403
-                .body(Matchers.containsString("Access is denied.")); // Expected error message
+                .body(Matchers.containsStringIgnoringCase("Access denied.")); // Expected error message
     }
 }
